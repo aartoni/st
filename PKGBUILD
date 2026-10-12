@@ -6,8 +6,13 @@ pkgdesc="minilarbs build of st"
 arch=(x86_64)
 url=https://github.com/aartoni/st
 license=(MIT)
-depends=(glibc fontconfig harfbuzz libx11 libxft)
+depends=(glibc fontconfig harfbuzz libx11 libxft sh coreutils sed grep gawk util-linux)
 makedepends=(freetype2)
+optdepends=(
+  'dmenu: URL and output pickers (Alt+l, Alt+y, Alt+o)'
+  'xclip: copy a URL or command output (Alt+y, Alt+o)'
+  'xdg-utils: open a URL (Alt+l)'
+)
 provides=(st)
 conflicts=(st)
 _patches=(
@@ -24,9 +29,13 @@ _patches=(
 )
 source=("https://dl.suckless.org/st/st-$pkgver.tar.gz"
         config.h
+        st-urlhandler
+        st-copyout
         "${_patches[@]}")
 b2sums=('95d672b8bd25f2bcda9ef7d0238fec522045e5082d5bdfda0b34ad1c67b93c1571e62f96b41f6a024ca00311d405d081a922f61604014d99708a0bdf20eb0e38'
         'b7d72426683d3bb3c9510129e390921bc21faba57eeee980dd10c5c63333d4e7f412b59994b8bd99ca97c50aac8444c5a998a663362b7f7037f0f56d14191888'
+        '139c6c64bb128ddd024dd6544e178cc89b382a862eca9e1406f8f18cf017b57f644717d0d202f6acea7e0b723db51abd4e52c9ce4341aebea3af01e095553630'
+        'e0a726b8d4e80047d0511dd6b04256cfdacbc61d805ce2b0ac58dd5c0ecf932a7744e368aa9ca8feb34caba4332bfe2ebbcc7384e9d1f6efb405d9e1e5c44ea1'
         'd8ff75d18cd2c657d683c653e1a4bec9c064f5eb1052a145afe9788cbd8d646a45e23c37f7e640a474ad77bd1591623b206221df76339980931128ed0db8c8e1'
         '8818beb92407d586071645bfcf9fb206010f967e29541cbf563e30107a130a5518b8cbe433f29b6ca891c4b57ddf9e070320c1f4e2b70dbc4f0a8cdd46d8ba7d'
         '16fd18614b9663556494e882ba60c133e87641f2678a984261c0f7ed6d4248a499fb009dd276db0a1c219a4449c62b236207fcc03ae055dba88d63a3e09037b7'
@@ -59,5 +68,6 @@ build() {
 
 package() {
   make -C "st-$pkgver" PREFIX=/usr DESTDIR="$pkgdir" install
+  install -Dm755 -t "$pkgdir/usr/bin" st-urlhandler st-copyout
   install -Dm644 "st-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
