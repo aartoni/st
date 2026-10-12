@@ -1,0 +1,50 @@
+From 49a8f6f0be66efa4f8fee3fcbd17b283631f500c Mon Sep 17 00:00:00 2001
+From: aartoni <alessio@artoni.org>
+Date: Mon, 12 Oct 2026 11:47:42 +0200
+Subject: [PATCH] minilarbs-class
+
+---
+ st.1 | 4 ++--
+ x.c  | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/st.1 b/st.1
+index 39120b4..b0338a3 100644
+--- a/st.1
++++ b/st.1
+@@ -56,7 +56,7 @@ is a simple terminal emulator.
+ disable alternate screens in terminal
+ .TP
+ .BI \-c " class"
+-defines the window class (default $TERM).
++defines the window class (default St).
+ .TP
+ .BI \-f " font"
+ defines the
+@@ -73,7 +73,7 @@ for further details.
+ will fixate the position given with the -g option.
+ .TP
+ .BI \-n " name"
+-defines the window instance name (default $TERM).
++defines the window instance name (default st).
+ .TP
+ .BI \-o " iofile"
+ writes all the I/O to
+diff --git a/x.c b/x.c
+index 8afd282..f795820 100644
+--- a/x.c
++++ b/x.c
+@@ -890,8 +890,8 @@ xclear(int x1, int y1, int x2, int y2)
+ void
+ xhints(void)
+ {
+-	XClassHint class = {opt_name ? opt_name : termname,
+-	                    opt_class ? opt_class : termname};
++	XClassHint class = {opt_name ? opt_name : "st",
++	                    opt_class ? opt_class : "St"};
+ 	XWMHints wm = {.flags = InputHint, .input = 1};
+ 	XSizeHints *sizeh;
+ 
+-- 
+2.56.0
+
