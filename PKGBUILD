@@ -6,17 +6,35 @@ pkgdesc="minilarbs build of st"
 arch=(x86_64)
 url=https://github.com/aartoni/st
 license=(MIT)
-depends=(glibc fontconfig libx11 libxft)
+depends=(glibc fontconfig harfbuzz libx11 libxft)
 makedepends=(freetype2)
 provides=(st)
 conflicts=(st)
 _patches=(
+  https://st.suckless.org/patches/externalpipe/st-externalpipe-0.8.5.diff
+  st-scrollback-0.9.2.patch
+  st-externalpipe-eternal-0.8.3.patch
+  https://st.suckless.org/patches/xresources/st-xresources-20260524-688f70a.diff
+  https://st.suckless.org/patches/alpha/st-alpha-20240814-a0274bc.diff
+  st-changealpha-20251027-0.9.3.patch
+  st-boxdraw_v2-0.8.5.patch
+  st-ligatures-boxdraw-20251007-0.9.3.patch
+  st-font2-0.8.5.patch
 )
 source=("https://dl.suckless.org/st/st-$pkgver.tar.gz"
         config.h
         "${_patches[@]}")
 b2sums=('95d672b8bd25f2bcda9ef7d0238fec522045e5082d5bdfda0b34ad1c67b93c1571e62f96b41f6a024ca00311d405d081a922f61604014d99708a0bdf20eb0e38'
-        '8d17bbbad10eb28375175ae5614fcc9ccb29364e9871a5aaf75408ee7bf383c5edf204b8789a5c88951f798421b33350941d8badfb372bf8f1ce749f89901f7e')
+        'b7d72426683d3bb3c9510129e390921bc21faba57eeee980dd10c5c63333d4e7f412b59994b8bd99ca97c50aac8444c5a998a663362b7f7037f0f56d14191888'
+        'd8ff75d18cd2c657d683c653e1a4bec9c064f5eb1052a145afe9788cbd8d646a45e23c37f7e640a474ad77bd1591623b206221df76339980931128ed0db8c8e1'
+        '8818beb92407d586071645bfcf9fb206010f967e29541cbf563e30107a130a5518b8cbe433f29b6ca891c4b57ddf9e070320c1f4e2b70dbc4f0a8cdd46d8ba7d'
+        '16fd18614b9663556494e882ba60c133e87641f2678a984261c0f7ed6d4248a499fb009dd276db0a1c219a4449c62b236207fcc03ae055dba88d63a3e09037b7'
+        '027b43661e3409a23839b51c3578f3d982357ef9731738a6547280d5e53234dd6dba8bdbc23ccda3eb2d1fe5fddc036bfd8bf37b671c3b3bf48c471e73433fcb'
+        '1ebf136e4f9f0cb18f75e94cbfbadf7c3a2cb8c835ad26262f2e98cf25e88efe568946a9894430151711a3a0e7c96aa71c2e34dd1e9a9c9e69f045f8f9c8df2a'
+        'def850fb10729ca0be50452f3506b86d1ba929cd37f5232a06d0a6b99cdcd4b71967e6c33a8f2b70a029c21ab3562859757df1cbdaa77bfada5b52d70947a173'
+        '1852146f515637bd708b486a91c4693427a259c1390ca42203b8b2795d11b562c6959c2392d6e7bada1ddb315ae079aae78c55890baa2a20952c37c4fd1ec62c'
+        'a7c0956e5f03462beb5788f4b1d2b53ab36050df763bf4274f5fa04b42161c27070cb4878432033e4ef3f307eae718e150bc8432cc8663c572c95a0ba80b73bd'
+        'f6c04383bba4b9418116e08749acabc552a9c86aff5750ae9bc46c208a9989432ad2c6bc6f517cd7993f4a7c24a526c673999cdc0fd9847ec6a961cb0794cc96')
 
 prepare() {
   cd "st-$pkgver"

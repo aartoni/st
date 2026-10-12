@@ -6,6 +6,12 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+/* Spare fonts */
+static char *font2[] = {
+/*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
+/*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
+};
+
 static int borderpx = 2;
 
 /*
@@ -68,6 +74,18 @@ static unsigned int blinktimeout = 800;
 static unsigned int cursorthickness = 2;
 
 /*
+ * 1: render most of the lines/blocks characters without using the font for
+ *    perfect alignment between cells (U2500 - U259F except dashes/diagonals).
+ *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
+ * 0: disable (render all U25XX glyphs normally from the font).
+ */
+const int boxdraw = 0;
+const int boxdraw_bold = 0;
+
+/* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
+const int boxdraw_braille = 0;
+
+/*
  * bell volume. It must be a value between -100 and 100. Use 0 for disabling
  * it
  */
@@ -92,6 +110,10 @@ char *termname = "st-256color";
  *	stty tabs
  */
 unsigned int tabspaces = 8;
+
+/* bg opacity */
+float alpha = 0.8;
+float alpha_def;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
@@ -201,6 +223,11 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+    { ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+	{ MODKEY,               XK_bracketleft, chgalpha,       {.f = -1} }, /* Decrease opacity */
+	{ MODKEY|ShiftMask,     XK_braceright,  chgalpha,       {.f = +1} }, /* Increase opacity */
+	{ MODKEY,               XK_bracketright,chgalpha,       {.f =  0} }, /* Reset opacity */
 };
 
 /*
@@ -472,3 +499,39 @@ static char ascii_printable[] =
 	" !\"#$%&'()*+,-./0123456789:;<=>?"
 	"@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_"
 	"`abcdefghijklmnopqrstuvwxyz{|}~";
+
+/* X resources to update */
+static const XResPref resources[] = {
+	/* name                    type     address */
+	{ "st.font",               STRING,  &font },
+	{ "st.color0",             STRING,  &colorname[0] },
+	{ "st.color1",             STRING,  &colorname[1] },
+	{ "st.color2",             STRING,  &colorname[2] },
+	{ "st.color3",             STRING,  &colorname[3] },
+	{ "st.color4",             STRING,  &colorname[4] },
+	{ "st.color5",             STRING,  &colorname[5] },
+	{ "st.color6",             STRING,  &colorname[6] },
+	{ "st.color7",             STRING,  &colorname[7] },
+	{ "st.color8",             STRING,  &colorname[8] },
+	{ "st.color9",             STRING,  &colorname[9] },
+	{ "st.color10",            STRING,  &colorname[10] },
+	{ "st.color11",            STRING,  &colorname[11] },
+	{ "st.color12",            STRING,  &colorname[12] },
+	{ "st.color13",            STRING,  &colorname[13] },
+	{ "st.color14",            STRING,  &colorname[14] },
+	{ "st.color15",            STRING,  &colorname[15] },
+	{ "st.foreground",         STRING,  &colorname[258] },
+	{ "st.background",         STRING,  &colorname[259] },
+	{ "st.cursorColor",        STRING,  &colorname[256] },
+	{ "st.cursorColorReverse", STRING,  &colorname[257] },
+	{ "st.termname",           STRING,  &termname },
+	{ "st.shell",              STRING,  &shell },
+	{ "st.minlatency",         INTEGER, &minlatency },
+	{ "st.maxlatency",         INTEGER, &maxlatency },
+	{ "st.blinktimeout",       INTEGER, &blinktimeout },
+	{ "st.bellvolume",         INTEGER, &bellvolume },
+	{ "st.tabspaces",          INTEGER, &tabspaces },
+	{ "st.borderpx",           INTEGER, &borderpx },
+	{ "st.cwscale",            FLOAT,   &cwscale },
+	{ "st.chscale",            FLOAT,   &chscale },
+};

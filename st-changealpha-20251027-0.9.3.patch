@@ -1,0 +1,98 @@
+From 1ca12595010de5df36ecc4328227d68e94488d93 Mon Sep 17 00:00:00 2001
+From: aartoni <alessio@artoni.org>
+Date: Mon, 12 Oct 2026 11:12:32 +0200
+Subject: [PATCH] st-changealpha-20251027-0.9.3
+
+---
+ config.def.h |  4 ++++
+ st.h         |  1 +
+ x.c          | 28 ++++++++++++++++++++++++++++
+ 3 files changed, 33 insertions(+)
+
+diff --git a/config.def.h b/config.def.h
+index 11b1b49..ef8b0c7 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -95,6 +95,7 @@ unsigned int tabspaces = 8;
+ 
+ /* bg opacity */
+ float alpha = 0.8;
++float alpha_def;
+ 
+ /* Terminal colors (16 first used in escape sequence) */
+ static const char *colorname[] = {
+@@ -206,6 +207,9 @@ static Shortcut shortcuts[] = {
+ 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+ 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+     { ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
++	{ MODKEY,               XK_bracketleft, chgalpha,       {.f = -1} }, /* Decrease opacity */
++	{ MODKEY|ShiftMask,     XK_braceright,  chgalpha,       {.f = +1} }, /* Increase opacity */
++	{ MODKEY,               XK_bracketright,chgalpha,       {.f =  0} }, /* Reset opacity */
+ };
+ 
+ /*
+diff --git a/st.h b/st.h
+index ee3bee2..4fe8a9b 100644
+--- a/st.h
++++ b/st.h
+@@ -127,3 +127,4 @@ extern unsigned int tabspaces;
+ extern unsigned int defaultfg;
+ extern unsigned int defaultbg;
+ extern unsigned int defaultcs;
++extern float alpha_def;
+diff --git a/x.c b/x.c
+index d240411..3fba26f 100644
+--- a/x.c
++++ b/x.c
+@@ -69,6 +69,7 @@ static void zoom(const Arg *);
+ static void zoomabs(const Arg *);
+ static void zoomreset(const Arg *);
+ static void ttysend(const Arg *);
++static void chgalpha(const Arg *);
+ 
+ /* config.h for applying patches and the configuration. */
+ #include "config.h"
+@@ -1186,6 +1187,9 @@ xinit(int cols, int rows)
+ 	usedfont = (opt_font == NULL)? font : opt_font;
+ 	xloadfonts(usedfont, 0);
+ 
++   /* Backup default alpha value */
++   alpha_def = alpha;
++
+ 	/* colors */
+ 	xw.cmap = XCreateColormap(xw.dpy, parent, xw.vis, None);
+ 	xloadcols();
+@@ -1410,6 +1414,30 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
+ 	return numspecs;
+ }
+ 
++void
++chgalpha(const Arg *arg)
++{
++   if (arg->f == -1.0f && alpha >= 0.1f)
++      alpha -= 0.1f;
++   else if (arg->f == 1.0f && alpha < 1.0f)
++      alpha += 0.1f;
++   else if (arg->f == 0.0f)
++      alpha = alpha_def;
++   else
++      return;
++
++    /* Clamp alpha so it never exceeds valid range */
++    if (alpha < 0.1f)
++        alpha = 0.1f;
++    if (alpha > 1.0f)
++        alpha = 1.0f;
++
++   dc.col[defaultbg].color.alpha = (unsigned short)(0xFFFF * alpha);
++   /* Required to remove artifacting from borderpx */
++   cresize(0, 0);
++   redraw();
++}
++
+ void
+ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, int y)
+ {
+-- 
+2.56.0
+
